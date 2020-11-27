@@ -153,6 +153,8 @@ public class MainActivity extends AppCompatActivity {
                 // Grab the data from the API response as a string
                 final String myResponse = response.body().string();
 
+                response.close();
+
                 // Run this part of the code on the UI thread so it can update the TextViews
                 MainActivity.this.runOnUiThread(new Runnable() {
                     @Override
@@ -184,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
 
                             mTextViewJSONTheme.setText(oAttributes.getString("THEME"));
                             mTextViewJSONName.setText(oAttributes.getString("NAME"));
-                           
+
                        } catch (JSONException e) {
                             // Something went wrong when processing the JSON data output the error
                             e.printStackTrace();
