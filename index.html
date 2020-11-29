@@ -1,0 +1,561 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Using OkHttp</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/codelab-elements/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid="UA-52746336-1"
+                  id="12.1OkHttpAPI"
+                  title="Using OkHttp"
+                  environment="web"
+                  feedback-link="https://github.com/frustr8dlec/DemoJSONAPI/issues">
+    
+      <google-codelab-step label="Introduction" duration="0">
+        <p><strong>Last Updated:</strong> 27/11/2020</p>
+<h2 is-upgraded><strong>How does an Android application communicate on the web?</strong></h2>
+<p>Most Android-based applications communicate with services that provide remote datastores and processing using the world wide web, the services sit on computing hardware attached to the web.  To allow simple access to what can be quite complex systems the services offer up what is called an API that has one or more endpoints (URLs) that allow communication between the application and the service via the HTTP/HTTPS protocol.  Effectively the application sends a request to the service and the service returns data in a specific format.</p>
+<h3 is-upgraded><strong>What is a web API</strong></h3>
+<p>A web API is an interface that is provided over the world wide web communications take place through your application making a request to the API using form type submission that contains parameters that either request or change data that is hidden behind the API.  Typically the API will expect you to specify a URL and query parameters in the form of an HTTP request.</p>
+<h3 is-upgraded><strong>What is OkHttp</strong></h3>
+<p>OkHttp is a library that is written in Java that allows you to make these requests and receive the responses from the API in JSON format.  This can be used in any Java program, including Android Studio developed applications.</p>
+<h2 is-upgraded><strong>What you will build</strong></h2>
+<p>In this code lab, you&#39;re going to build a simple demonstration Android app using the OkHttp library to request data from an API hosted on the web. </p>
+<aside class="warning"><p><strong>Note:</strong> For this code lab the focus is on making a single simple request using pre-formed data in a normal application the data used to query the API would most likely be obtained from user input.  Where security would be required there would be an expectation that a login process would occur prior to requesting or changing data.</p>
+</aside>
+<h2 class="checklist" is-upgraded><strong>What you&#39;ll learn</strong></h2>
+<ul class="checklist">
+<li>How to add an external library to your Android Studio Project</li>
+<li>How to implement OkHttp in an activity to make a request from an API</li>
+<li>How to how to retrieve the results of a successful request</li>
+<li>How to identify an unsuccessful request response</li>
+<li>How to extract data from a JSON request</li>
+</ul>
+<h2 is-upgraded><strong>What you&#39;ll need</strong></h2>
+<ul>
+<li>Android Studio 4.1+.</li>
+<li>Knowledge of the compiling and running apps on either an emulator or a phone.</li>
+<li>An understanding of the standard methods in an Android application activity.</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Getting set up" duration="6">
+        <h2 is-upgraded><strong>Start a new Android Studio Project</strong></h2>
+<p>Open Android Studio and select create new project based on an empty activity, save the project as DemoJSONAPI</p>
+<p>.<img style="width: 624.00px" src="img\\80cfcc73043212b3.png"></p>
+<p>Open the activity_main.xml layout file and replace the existing layout with the linear layout below, the layout defines three TextViews that will hold the data retrieved from the web API used in this project.</p>
+<h3 is-upgraded><strong>activity_main.xml</strong></h3>
+<pre><code>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;
+&lt;LinearLayout xmlns:android=&#34;http://schemas.android.com/apk/res/android&#34;
+    xmlns:app=&#34;http://schemas.android.com/apk/res-auto&#34;
+    xmlns:tools=&#34;http://schemas.android.com/tools&#34;
+    android:layout_width=&#34;match_parent&#34;
+    android:layout_height=&#34;match_parent&#34;
+    android:orientation=&#34;vertical&#34;
+    tools:context=&#34;.MainActivity&#34;&gt;
+
+    &lt;TextView
+        android:id=&#34;@+id/textViewName&#34;
+        android:layout_width=&#34;match_parent&#34;
+        android:layout_height=&#34;wrap_content&#34;
+        android:text=&#34;TextView&#34; /&gt;
+
+    &lt;TextView
+        android:id=&#34;@+id/textViewTheme&#34;
+        android:layout_width=&#34;match_parent&#34;
+        android:layout_height=&#34;wrap_content&#34;
+        android:text=&#34;TextView&#34; /&gt;
+
+    &lt;TextView
+        android:id=&#34;@+id/textViewJSON&#34;
+        android:layout_width=&#34;match_parent&#34;
+        android:layout_height=&#34;wrap_content&#34;
+        android:text=&#34;TextView&#34; /&gt;
+&lt;/LinearLayout&gt;</code></pre>
+<p>Verify the layout is working in Android Studio it should look similar to the image below in the designer</p>
+<p class="image-container"><img style="width: 624.00px" src="img\\19cf8559ab0b6dc0.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Installing the OkHttp library" duration="5">
+        <p>Before any requests can be made or        responded to, the OkHttp library needs to be registered as part of the project and downloaded, this process is managed by the Gradle system included in Android Studio.</p>
+<p>As the project requires the library to work it is a ‘dependency&#39; for the app, to register a  dependency open the build.gradle (Module: DemoJSONAPI.app) file from the project list.</p>
+<p class="image-container"><img style="width: 375.50px" src="img\\704197a10ae2937c.png"></p>
+<p>In the file you will need to add the line <code>implementation  "com.squareup.okhttp3:okhttp:4.9.0"</code> to the dependencies block as shown below.</p>
+<h3 is-upgraded><strong>build.gradle (Module: DemoJSONAPI.app)</strong></h3>
+<pre><code>dependencies {
+
+    implementation &#39;androidx.appcompat:appcompat:1.2.0&#39;
+    implementation &#39;com.google.android.material:material:1.2.1&#39;
+    implementation &#39;androidx.constraintlayout:constraintlayout:2.0.4&#39;
+    testImplementation &#39;junit:junit:4.+&#39;
+    androidTestImplementation &#39;androidx.test.ext:junit:1.1.2&#39;
+    androidTestImplementation &#39;androidx.test.espresso:espresso-core:3.3.0&#39;
+    implementation  &#34;com.squareup.okhttp3:okhttp:4.9.0&#34;
+}
+</code></pre>
+<p>Upon completing this you will need to Sync gradle and build the project, Gradle should prompt you to do this at the top of the screen.</p>
+<p class="image-container"><img style="width: 325.46px" src="img\\ffeb78739836ee8a.png"></p>
+<p>This process downloads the .jar file containing the library and installs it as part of the project libraries.</p>
+<aside class="warning"><p><strong>Caution:</strong> If you fail to sync and build your project, entering any code that makes use of the library will be displayed in red in the code window as it cannot find references to the objects and methods associated with them. </p>
+</aside>
+<h2 is-upgraded><strong>Add app manifest permissions</strong></h2>
+<p>To allow OkHttp to communicate over the internet requires that the manifest lists the permission so that the user is aware it is required for the app to function.</p>
+<p>Open the manifest file and add <code><uses-permission android:name="android.permission.INTERNET"/></code> above the <code><application</code> line.</p>
+<h3 is-upgraded><strong>AndroidManifest.xml</strong></h3>
+<pre><code>&lt;?xml version=&#34;1.0&#34; encoding=&#34;utf-8&#34;?&gt;
+&lt;manifest xmlns:android=&#34;http://schemas.android.com/apk/res/android&#34;
+    package=&#34;com.example.demojsonapi&#34;&gt;
+
+    &lt;uses-permission android:name=&#34;android.permission.INTERNET&#34;/&gt;
+
+    &lt;application
+        android:allowBackup=&#34;true&#34;
+        android:icon=&#34;@mipmap/ic_launcher&#34;
+        android:label=&#34;@string/app_name&#34;
+        android:roundIcon=&#34;@mipmap/ic_launcher_round&#34;
+        android:supportsRtl=&#34;true&#34;
+        android:theme=&#34;@style/Theme.DemoJSONAPI&#34;&gt;
+        &lt;activity android:name=&#34;.MainActivity&#34;&gt;
+            &lt;intent-filter&gt;
+                &lt;action android:name=&#34;android.intent.action.MAIN&#34; /&gt;
+
+                &lt;category android:name=&#34;android.intent.category.LAUNCHER&#34; /&gt;
+            &lt;/intent-filter&gt;
+        &lt;/activity&gt;
+    &lt;/application&gt;
+
+&lt;/manifest&gt;
+</code></pre>
+<h2 is-upgraded><strong>OkHttp features used in this codelab</strong></h2>
+<p>For the purpose of this codelab the app will make use of the following features of OkHttp</p>
+<p>The <strong>OkHttpClient</strong> object - Factory for calls, which can be used to send HTTP requests and read their responses.</p>
+<ul>
+<li><strong>.newCall</strong> - Prepares a HTTP request to be executed at some point in the future.</li>
+<li><strong>.enqueue</strong> - Schedules the request to be executed at some point in the future.</li>
+</ul>
+<p><strong>HttpUrl</strong> class - A uniform resource locator (URL) with a scheme of either http or https. Use this class to compose and decompose Internet addresses.</p>
+<p>A  <strong>Request</strong> object - Represents an HTTP request.</p>
+<p>A <strong>Call</strong> object - A call is a request that has been prepared for execution. A call can be canceled. As this object represents a single request/response pair (stream), it cannot be executed twice.</p>
+<ul>
+<li><strong>.cancel</strong> - Cancels a HTTP request, if possible. Requests that are already complete cannot be canceled.</li>
+</ul>
+<p>A <strong>Response</strong> object - An HTTP response. </p>
+<ul>
+<li><strong>.body</strong> - Instances of this class are not immutable: the response body is a one-shot value that may be consumed only once and then closed. All other properties are immutable.</li>
+<li><strong>.close</strong> - closes the response and its associated connection.</li>
+</ul>
+<p>To enable access to these classes and methods the following imports need to be added to the main activity.</p>
+<h3 is-upgraded><strong>MainActivity.java</strong></h3>
+<pre><code>import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.HttpUrl;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Activity setup" duration="10">
+        <h2 is-upgraded><strong>getHTTPData()</strong></h2>
+<p>The method getHTTPData() will contain all the code relating to making the HTTP request to the web based API, for the moment a code stub needs to be added to the main activity to allow the application to build and run without error.</p>
+<p>Add the following import in the imports section of the main activity, this is so that should getHTTPData fail to retrieve data from the API it is able to create the appropriate exception.</p>
+<h3 is-upgraded><strong>MainActivity.java</strong></h3>
+<pre><code>import java.io.IOException;</code></pre>
+<p>Add the code stub after the onCreate() method in the main activity.  The code will added to as the app is built.</p>
+<h3 is-upgraded><strong>MainActivity.java</strong></h3>
+<pre><code>void getHTTPData() throws IOException {
+}</code></pre>
+<h2 is-upgraded><strong>Class variables</strong></h2>
+<p>This demonstration application makes use of three TextViews to hold the information retrieved from the web API, add the three class member variables to refer to the TextViews on this activities layout.</p>
+<h3 is-upgraded><strong>MainActivity.java</strong></h3>
+<pre><code>public class MainActivity extends AppCompatActivity {
+
+    private TextView mTextViewJSONName;
+    private TextView mTextViewJSONTheme;
+    private TextView mTextViewJSONData;
+</code></pre>
+<h2 is-upgraded><strong>onCreate()</strong></h2>
+<p>The onCreate method populates TextView variables and calls the getHTTPData() method to make the HTTP request, this request could be moved to a button click event if repeated requests are required after the activity starts.</p>
+<h3 is-upgraded><strong>MainActivity.java</strong></h3>
+<pre><code>@Override
+protected void onCreate(Bundle savedInstanceState) {
+   super.onCreate(savedInstanceState);
+   setContentView(R.layout.activity_main);
+
+   // Get references to the TextViews to allow us to update them
+   mTextViewJSONName = (TextView)findViewById(R.id.textViewName);
+   mTextViewJSONTheme = (TextView)findViewById(R.id.textViewTheme);
+   mTextViewJSONData = (TextView)findViewById(R.id.textViewJSON);
+
+   // This is the call to the  method getHTTPData(); that handles all the requesting
+   // of the api data should anything fail it will throw an IOException
+   try {
+        getHTTPData();
+   } catch (IOException e) {
+        e.printStackTrace();
+   }
+}
+</code></pre>
+<aside class="special"><p><strong>Note:</strong> At this stage it is possible to compile and run the application, there will be very little to be seen on screen but it does provide a confidence check prior to starting the next session.</p>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Building a HTTP request" duration="10">
+        <h2 is-upgraded><strong>Creating a client</strong></h2>
+<p>OkHttp provides a HTTP client class that provides the communication between your application and the web server that provides the API, an object needs to be instantiated to allow communication. Adding the line below to getHTTPData() creates the object with the variable name client.</p>
+<aside class="special"><p><strong>Note:</strong> OkHttp client handles requesting data from and receiving back from the API see <a href="https://square.github.io/okhttp/" target="_blank">https://square.github.io/okhttp/</a> documentation, please be aware that this is a Java library it is not specifically written for Android.</p>
+</aside>
+<h3 is-upgraded><strong>MainActivity.java</strong></h3>
+<pre><code>void getHTTPData() throws IOException {
+
+     OkHttpClient client = new OkHttpClient();
+
+}</code></pre>
+<h2 is-upgraded><strong>Building a request</strong></h2>
+<p>API requests are normally formed in the same way as a HTTP request with a URL path and then query parameters, a request may also contain additional data that is sent apart from the URL and HTTP headers.  This information is transmitted to the server using similar processes to HTML form submissions.</p>
+<p>The app uses the <a href="https://naturalengland-defra.opendata.arcgis.com/datasets/a14064ca50e242c4a92d020764a6d9df_0?selectedAttribute=THEMNAME" target="_blank">Natural England Open Data Natural Woodland API</a> that stores information about ancient woodlands in England. Below is an example get request from the ancient woodlands API as it would appear in a browser address bar</p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/</a></p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">Ancient_Woodland_England/FeatureServer/0/query</a></p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27</a></p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">&amp;outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,</a></p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">STATUS,X_COORD,Y_COORD</a></p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">&amp;returnGeometry=false</a></p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">&amp;returnDistinctValues=true</a></p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">&amp;outSR=4326</a></p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">&amp;f=json</a></p>
+<p>The above makes little sense unless you understand the API, for information a short summary is provided below.</p>
+<p>API Summary</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>Protocol and host name</p>
+</td><td colspan="1" rowspan="1"><p>https://services.arcgis.com/</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>API path on server (endpoint)</p>
+</td><td colspan="1" rowspan="1"><p>JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query</p>
+<p> ?</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>API Parameter the search condition on the database %20 is a space %25 is a % and %27 is a ‘</p>
+</td><td colspan="1" rowspan="1"><p>where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>API Parameter which columns to return from the database</p>
+</td><td colspan="1" rowspan="1"><p>&amp;outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>API Parameter whether to return geometry information</p>
+</td><td colspan="1" rowspan="1"><p>&amp;returnGeometry=false</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>API Parameter return single rows when duplicates found as a consequence of the search</p>
+</td><td colspan="1" rowspan="1"><p>&amp;returnDistinctValues=true</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>API Parameter the datum for x,y coordinates</p>
+</td><td colspan="1" rowspan="1"><p>&amp;outSR=4326</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>API Parameter output format</p>
+</td><td colspan="1" rowspan="1"><p> &amp;f=json</p>
+</td></tr>
+</table>
+<p>OkHttp provides a static method to create a Builder object to construct a valid URL, for this exercise the URL is going to be built by combining the protocol, host name and path as one string and then adding the parameters.</p>
+<p>The builder is initialised by parsing the string data with the protocol, host name and path and then calling the newBuilder() method that returns a Builder object.</p>
+<pre><code>HttpUrl.parse(&#34;https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query&#34;)
+     .newBuilder();</code></pre>
+<p>Parameters are then added by calling the Builders <code>.addQueryParameter([parameter name], [parameter data])</code> method, in the example below the<code>"where"</code> parameter is added with the data <code>"NAME LIKE 'ABBOTS WOOD'"</code> joined to it.</p>
+<pre><code>urlBuilder.addQueryParameter(&#34;where&#34;, &#34;NAME LIKE &#39;ABBOTS WOOD&#39;&#34;);</code></pre>
+<p>Using the example data you can add all the parameters to the API call as shown below, with the final step being to call the Builders <code>.build()</code> method and chaining the <code>.toString()</code> method to create a formatted url string   <code>String url = urlBuilder.build().toString();</code></p>
+<h3 is-upgraded><strong>MainActivity.java</strong></h3>
+<pre><code>void getHTTPData() throws IOException {
+
+     OkHttpClient client = new OkHttpClient();
+
+     HttpUrl.Builder urlBuilder = 
+     HttpUrl.parse(&#34;https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query&#34;)
+     .newBuilder();
+
+     urlBuilder.addQueryParameter(&#34;where&#34;, &#34;NAME LIKE &#39;ABBOTS WOOD&#39;&#34;);
+     urlBuilder.addQueryParameter(&#34;outFields&#34;, &#34;OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&#34;);
+     urlBuilder.addQueryParameter(&#34;returnGeometry&#34;, &#34;false&#34;);
+     urlBuilder.addQueryParameter(&#34;returnDistinctValues&#34;, &#34;true&#34;);
+     urlBuilder.addQueryParameter(&#34;outSR&#34;, &#34;4326&#34;);
+     urlBuilder.addQueryParameter(&#34;f&#34;, &#34;json&#34;);
+
+     String url = urlBuilder.build().toString();
+}</code></pre>
+<aside class="special"><p><strong>Note:</strong> At this stage it is possible to compile and run the application, there will be very little to be seen on screen but inserting a breakpoint on the last line will allow you to inspect the string.</p>
+</aside>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Sending a HTTP request" duration="10">
+        <p>With the URL string built the next step is to build a request object and add it to the OkHttp&#39;s clients request queue to be run in the background while the application continues to run.</p>
+<h2 is-upgraded><strong>Building the request object</strong></h2>
+<p>The Request class is part of OkHttp it has a static method for building a Request object, it is possible to chain methods to complete the request object in one line as shown below that creates the Builder, feeds it the URL string and calls the build method to build the Request object.  Add the line below the line that creates the url string.</p>
+<h3 is-upgraded><strong>MainActivity.java</strong></h3>
+<pre><code>Request request = new Request.Builder()
+                .url(url)
+                .build();</code></pre>
+<h2 is-upgraded><strong>Scheduling a request for processing</strong></h2>
+<p>The HTTP clients <code>.newCall([Request object])</code> method creates a new call request, the <code>.enqueue([Callback object])</code> method  puts the request into a scheduler that will execute the request in the background, when the request completes the appropriate Callback() object method is called</p>
+<ul>
+<li>onFailure() - error in the request or no able to send the request</li>
+<li>onResponse() - the server based API return information</li>
+</ul>
+<p>The basic framework is shown in the following code block that should be added after the line that builds the request object.</p>
+<h3 is-upgraded><strong>MainActivity.java</strong></h3>
+<pre><code>client.newCall(request).enqueue(new Callback() 
+ {
+
+  @Override
+  public void onFailure(Call call, IOException e) {
+        call.cancel();
+  }
+ 
+  @Override
+  public void onResponse(Call call, Response response) throws IOException {
+
+         final String myResponse = response.body().string();
+
+         response.close();
+  }
+
+ }
+);</code></pre>
+<pre></pre>
+<aside class="special"><p><strong>Note:</strong> At this stage it is possible to compile and run the application, inserting a breakpoint on the line response.close(); will allow you to inspect the data returned from the API as a string.</p>
+</aside>
+<p>The onFailure() method will cancel the call freeing up resources and no further action will be taken by the application.</p>
+<p>The onResponse() method retrieves the data from the Response object and converts it to a string for further processing. </p>
+<aside class="warning"><p><strong>Caution:</strong> The body method is processing a stream of data and cannot be called more than once, storing the result in a string preserves it for further use. The Response objects close() method must be called to free the resources to avoid a memory leak</p>
+</aside>
+<p>.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Updating the UI" duration="4">
+        <p>Because the HTTP client runs requests on a separate thread from the UI, the <code>onResponse()</code> method is not part of the activity, so any code that needs to interact with the UI needs to be encapsulated in a Runnable object <code>run()</code> method and passed to the Activity using the <code>.runOnUiThread()</code> method.  This is achieved by adding the following code in the <code>onResponse()</code> method.</p>
+<h3 is-upgraded><strong>MainActivity.java</strong></h3>
+<pre><code>public void onResponse(Call call, Response response) throws IOException {
+
+        
+  final String myResponse = response.body().string();
+
+  response.close();
+
+  MainActivity.this.runOnUiThread(new Runnable() {
+
+      @Override
+      public void run() {
+         Log.d(&#34;OkHTTPResponse&#34;,&#34;Code running on the UI thread&#34;);
+         mTextViewJSONData.setText(&#34;Server API Sent Data&#34;);
+      }
+
+  });
+
+}</code></pre>
+<p>Running the code at this point will change the bottom text view to say Server API Sent Data if a valid response was received from the server API.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Processing response JSON" duration="15">
+        <p>As part of the standard library set provided with Android studio there is a library specifically for processing JSON string into Java data structures, this simplifies the process of dealing with JSON considerably.  What it does require is an understanding of the data structure returned from the API to be able to access elements within the object, this can only be achieved by reading the API documentation or viewing the response in a text editor and deciphering which elements to access and their position in the structure. <a href="https://jsonformatter.org/json-parser" target="_blank">https://jsonformatter.org/json-parser</a> is an online tool that will allow you to structure the output into an easily readable format in this example the API JSON data was formatted as below:</p>
+<p>API.json</p>
+<pre><code>{
+  &#34;objectIdFieldName&#34;: &#34;OBJECTID&#34;,
+  &#34;uniqueIdField&#34;: {
+    &#34;name&#34;: &#34;OBJECTID&#34;,
+    &#34;isSystemMaintained&#34;: true
+  },
+  &#34;globalIdFieldName&#34;: &#34;&#34;,
+  &#34;geometryType&#34;: &#34;esriGeometryPolygon&#34;,
+  &#34;spatialReference&#34;: {
+    &#34;wkid&#34;: 4326,
+    &#34;latestWkid&#34;: 4326
+  },
+  &#34;fields&#34;: [
+    {
+      &#34;name&#34;: &#34;OBJECTID&#34;,
+      &#34;type&#34;: &#34;esriFieldTypeOID&#34;,
+      &#34;alias&#34;: &#34;OBJECTID&#34;,
+      &#34;sqlType&#34;: &#34;sqlTypeOther&#34;,
+      &#34;domain&#34;: null,
+      &#34;defaultValue&#34;: null
+    },
+    {
+      &#34;name&#34;: &#34;NAME&#34;,
+      &#34;type&#34;: &#34;esriFieldTypeString&#34;,
+      &#34;alias&#34;: &#34;NAME&#34;,
+      &#34;sqlType&#34;: &#34;sqlTypeOther&#34;,
+      &#34;length&#34;: 150,
+      &#34;domain&#34;: null,
+      &#34;defaultValue&#34;: null
+    },
+    {
+      &#34;name&#34;: &#34;THEME&#34;,
+      &#34;type&#34;: &#34;esriFieldTypeString&#34;,
+      &#34;alias&#34;: &#34;THEME&#34;,
+      &#34;sqlType&#34;: &#34;sqlTypeOther&#34;,
+      &#34;length&#34;: 19,
+      &#34;domain&#34;: null,
+      &#34;defaultValue&#34;: null
+    },
+    {
+      &#34;name&#34;: &#34;THEMNAME&#34;,
+      &#34;type&#34;: &#34;esriFieldTypeString&#34;,
+      &#34;alias&#34;: &#34;THEMNAME&#34;,
+      &#34;sqlType&#34;: &#34;sqlTypeOther&#34;,
+      &#34;length&#34;: 37,
+      &#34;domain&#34;: null,
+      &#34;defaultValue&#34;: null
+    },
+    {
+      &#34;name&#34;: &#34;THEMID&#34;,
+      &#34;type&#34;: &#34;esriFieldTypeDouble&#34;,
+      &#34;alias&#34;: &#34;THEMID&#34;,
+      &#34;sqlType&#34;: &#34;sqlTypeOther&#34;,
+      &#34;domain&#34;: null,
+      &#34;defaultValue&#34;: null
+    },
+    {
+      &#34;name&#34;: &#34;STATUS&#34;,
+      &#34;type&#34;: &#34;esriFieldTypeString&#34;,
+      &#34;alias&#34;: &#34;STATUS&#34;,
+      &#34;sqlType&#34;: &#34;sqlTypeOther&#34;,
+      &#34;length&#34;: 8,
+      &#34;domain&#34;: null,
+      &#34;defaultValue&#34;: null
+    },
+    {
+      &#34;name&#34;: &#34;X_COORD&#34;,
+      &#34;type&#34;: &#34;esriFieldTypeInteger&#34;,
+      &#34;alias&#34;: &#34;X_COORD&#34;,
+      &#34;sqlType&#34;: &#34;sqlTypeOther&#34;,
+      &#34;domain&#34;: null,
+      &#34;defaultValue&#34;: null
+    },
+    {
+      &#34;name&#34;: &#34;Y_COORD&#34;,
+      &#34;type&#34;: &#34;esriFieldTypeInteger&#34;,
+      &#34;alias&#34;: &#34;Y_COORD&#34;,
+      &#34;sqlType&#34;: &#34;sqlTypeOther&#34;,
+      &#34;domain&#34;: null,
+      &#34;defaultValue&#34;: null
+    }
+  ],
+  &#34;features&#34;: [
+    {
+      &#34;attributes&#34;: {
+        &#34;OBJECTID&#34;: 20214,
+        &#34;NAME&#34;: &#34;ABBOTS WOOD&#34;,
+        &#34;THEME&#34;: &#34;ancient woodland&#34;,
+        &#34;THEMNAME&#34;: &#34;Ancient &amp; Semi-Natural Woodland&#34;,
+        &#34;THEMID&#34;: 1105082,
+        &#34;STATUS&#34;: &#34;ASNW&#34;,
+        &#34;X_COORD&#34;: 442276,
+        &#34;Y_COORD&#34;: 343921
+      }
+    }
+  ]
+}</code></pre>
+<p>To convert the string to a Java object is achieved by passing the string to the constructor of the JSONObject class <code>JSONObject json = new JSONObject(myResponse)</code>. </p>
+<p>At this point it is possible to navigate the JSON to retrieve data.  In the sample code the features array is extracted (using the <code>.getJSONArray("features")</code> ) and contains 0 or more objects representing rows of returned data (first row extracted with <code>.getJSONObject(0)</code>) each containing an attributes object (extracted with <code>.getJSONObject("attributes")</code>) representing the columns and data as key value pairs.</p>
+<h3 is-upgraded>MainActivity.java</h3>
+<pre><code>JSONObject oAttributes = json.getJSONArray(&#34;features&#34;)
+           .getJSONObject(0)
+           .getJSONObject(&#34;attributes&#34;);</code></pre>
+<aside class="special"><p>Note: for multiple rows of data it will be necessary to perform a loop based operation to extract data, currently this code would fail if no data was returned, the try catch is a catch all to deal with any failures in referencing something that did not exist in the JSON or situations where the JSON string was corrupt or incorrectly formatted.</p>
+</aside>
+<p>To obtain the value from a key in the attributes object there are a number of .get methods to extract data in the appropriate data type, in this case the <code>.getString("NAME")</code> method retrieves the name attribute.</p>
+<p>Insert the code below in the run method and run your application to see the API data appear in the TextViews</p>
+<h3 is-upgraded><strong>MainActivity.java</strong></h3>
+<pre><code>@Override
+public void run() {
+
+  try {
+
+       JSONObject json = new JSONObject(myResponse);
+
+       mTextViewJSONData.setText(json.toString());
+
+       JSONObject oAttributes = json.getJSONArray(&#34;features&#34;)
+                  .getJSONObject(0)
+                  .getJSONObject(&#34;attributes&#34;);
+                                     
+       mTextViewJSONTheme.setText(oAttributes.getString(&#34;THEME&#34;));                      
+       mTextViewJSONName.setText(oAttributes.getString(&#34;NAME&#34;));
+
+                           
+   } catch (JSONException e) {
+
+       e.printStackTrace();
+
+   }
+
+}</code></pre>
+<p>Your app should retrieve the requested data for Abbots Wood and display its name, theme and the full JSON string in the application.</p>
+<h3 is-upgraded><strong>Expected output for Abbots Wood</strong></h3>
+<p class="image-container"><img style="width: 461.20px" src="img\\ab1c07f266eb837a.png"></p>
+<aside class="warning"><p><strong>Caution:</strong> For simplicity the code for processing the JSON data returned from the server is included in the code that runs on the UI thread, if processing the data is expected to take a significant amount of time you may wish to do this prior to calling the runOnUiThread() method.</p>
+</aside>
+<h2 is-upgraded><strong>Get the code</strong></h2>
+<p>We&#39;ve put everything you need for this project into a Git repo. To get started, you&#39;ll need to grab the code and open it in Android Studio.</p>
+<h3 is-upgraded><strong>Strongly Recommended: Import the repo</strong></h3>
+<p>Cloning the Github repository is the recommended method for testing the result of this code lab.</p>
+<ol type="1" start="1">
+<li>Open Android Studio</li>
+<li>Select get from version control</li>
+<li>Select the GitHub option </li>
+<li>Copy the url <a href="https://github.com/frustr8dlec/DemoJSONAPI.git" target="_blank">https://github.com/frustr8dlec/DemoJSONAPI.git</a> into the box</li>
+<li>Click clone </li>
+</ol>
+<h3 is-upgraded><strong>Alternative: Download code </strong></h3>
+<p>If you want to download the code, you&#39;ll need to visit GitHub via the link below. </p>
+<aside class="warning"><p><strong>Caution:</strong> Do not try to open the files directly from the zip file always decompress them in your normal Android Studio projects folder</p>
+</aside>
+<p><a href="https://github.com/frustr8dlec/DemoJSONAPI" target="_blank"><paper-button class="colored" raised><iron-icon icon="file-download"></iron-icon>Download source code</paper-button></a></p>
+<ol type="1" start="1">
+<li>Unpack the downloaded zip file.</li>
+<li>Open the resulting files in Android Studio</li>
+<li>Wait for gradle to sync and build the project   </li>
+</ol>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Congratulations" duration="0">
+        <p>You now know the key steps required to communicate with a web API and process JSON data.</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/codelab-elements/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/prettify.js"></script>
+  <script src="https://storage.googleapis.com/codelab-elements/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
