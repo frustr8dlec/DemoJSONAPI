@@ -237,10 +237,10 @@ protected void onCreate(Bundle savedInstanceState) {
 <h2 is-upgraded><strong>Building a request</strong></h2>
 <p>API requests are normally formed in the same way as a HTTP request with a URL path and then query parameters, a request may also contain additional data that is sent apart from the URL and HTTP headers.  This information is transmitted to the server using similar processes to HTML form submissions.</p>
 <p>The app uses the <a href="https://naturalengland-defra.opendata.arcgis.com/datasets/a14064ca50e242c4a92d020764a6d9df_0?selectedAttribute=THEMNAME" target="_blank">Natural England Open Data Natural Woodland API</a> that stores information about ancient woodlands in England. Below is an example get request from the ancient woodlands API as it would appear in a browser address bar</p>
-<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/</a></p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">https://services.arcgis.com/<br>JJzESW51TqeY9uat/arcgis/rest/services/</a></p>
 <p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">Ancient_Woodland_England/FeatureServer/0/query</a></p>
-<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27</a></p>
-<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">&amp;outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,</a></p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">?where=NAME%20LIKE%20%27<br>ABBOTS%20WOOD%25%27</a></p>
+<p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">&amp;outFields=OBJECTID,NAME,<br>THEME,THEMNAME,THEMID,</a></p>
 <p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">STATUS,X_COORD,Y_COORD</a></p>
 <p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">&amp;returnGeometry=false</a></p>
 <p><a href="https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query?where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27&outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD&returnGeometry=false&returnDistinctValues=true&outSR=4326&f=json" target="_blank">&amp;returnDistinctValues=true</a></p>
@@ -253,14 +253,13 @@ protected void onCreate(Bundle savedInstanceState) {
 </td><td colspan="1" rowspan="1"><p>https://services.arcgis.com/</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>API path on server (endpoint)</p>
-</td><td colspan="1" rowspan="1"><p>JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query</p>
-<p> ?</p>
+</td><td colspan="1" rowspan="1"><p>JJzESW51TqeY9uat/arcgis/rest<br>/services/Ancient_Woodland_England<br>/FeatureServer/0/query ?</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>API Parameter the search condition on the database %20 is a space %25 is a % and %27 is a ‘</p>
-</td><td colspan="1" rowspan="1"><p>where=NAME%20LIKE%20%27ABBOTS%20WOOD%25%27</p>
+</td><td colspan="1" rowspan="1"><p>where=NAME%20LIKE%20%27<br>ABBOTS%20WOOD%25%27</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>API Parameter which columns to return from the database</p>
-</td><td colspan="1" rowspan="1"><p>&amp;outFields=OBJECTID,NAME,THEME,THEMNAME,THEMID,STATUS,X_COORD,Y_COORD</p>
+</td><td colspan="1" rowspan="1"><p>&amp;outFields=OBJECTID,NAME,<br>THEME,THEMNAME,THEMID,STATUS<br>,X_COORD,Y_COORD</p>
 </td></tr>
 <tr><td colspan="1" rowspan="1"><p>API Parameter whether to return geometry information</p>
 </td><td colspan="1" rowspan="1"><p>&amp;returnGeometry=false</p>
@@ -340,7 +339,7 @@ protected void onCreate(Bundle savedInstanceState) {
 
  }
 );</code></pre>
-<pre></pre>
+<p>This code at the moment does very little and will be expanded upon later in this code lab.</p>
 <aside class="special"><p><strong>Note:</strong> At this stage it is possible to compile and run the application, inserting a breakpoint on the line response.close(); will allow you to inspect the data returned from the API as a string.</p>
 </aside>
 <p>The onFailure() method will cancel the call freeing up resources and no further action will be taken by the application.</p>
