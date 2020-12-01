@@ -276,7 +276,9 @@ protected void onCreate(Bundle savedInstanceState) {
 </table>
 <p>OkHttp provides a static method to create a Builder object to construct a valid URL, for this exercise the URL is going to be built by combining the protocol, host name and path as one string and then adding the parameters.</p>
 <p>The builder is initialised by parsing the string data with the protocol, host name and path and then calling the newBuilder() method that returns a Builder object.</p>
-<pre><code>HttpUrl.parse(&#34;https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query&#34;)
+<pre><code>HttpUrl.Builder urlBuilder = 
+
+HttpUrl.parse(&#34;https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query&#34;)
      .newBuilder();</code></pre>
 <p>Parameters are then added by calling the Builders <code>.addQueryParameter([parameter name], [parameter data])</code> method, in the example below the<code>"where"</code> parameter is added with the data <code>"NAME LIKE 'ABBOTS WOOD'"</code> joined to it.</p>
 <pre><code>urlBuilder.addQueryParameter(&#34;where&#34;, &#34;NAME LIKE &#39;ABBOTS WOOD&#39;&#34;);</code></pre>
