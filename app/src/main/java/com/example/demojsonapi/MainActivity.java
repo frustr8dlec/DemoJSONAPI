@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -179,18 +180,19 @@ public class MainActivity extends AppCompatActivity {
                              which are held in an array called features
                              in this example we are extracting the first row only multiple values
                              would require a loop
-                             */
+
 
                             JSONObject oAttributes = json.getJSONArray("features")
                                     .getJSONObject(0)
                                     .getJSONObject("attributes");
 
-                            /*
+
                              Output the name of the woods and the theme
                              */
 
-                            mTextViewJSONTheme.setText(oAttributes.getString("THEME"));
-                            mTextViewJSONName.setText(oAttributes.getString("NAME"));
+                           JSONArray oAttributes = json.getJSONArray("weather");
+                           mTextViewJSONTheme.setText(oAttributes.getJSONObject(0).getString("description"));
+                           mTextViewJSONName.setText(oAttributes.getJSONObject(0).getString("main"));
 
                        } catch (JSONException e) {
                             // Something went wrong when processing the JSON data output the error
