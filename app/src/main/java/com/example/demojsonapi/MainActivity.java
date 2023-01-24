@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
          .addQueryParameter("where", "NAME LIKE 'ABBOTS WOOD'") in the browser example above
          %20 is a space character and %27 is a single quote see
          https://www.w3schools.com/tags/ref_urlencode.ASP for a list.
-        */
 
         HttpUrl.Builder urlBuilder = HttpUrl.parse("https://services.arcgis.com/JJzESW51TqeY9uat/arcgis/rest/services/Ancient_Woodland_England/FeatureServer/0/query").newBuilder();
 
@@ -108,6 +107,12 @@ public class MainActivity extends AppCompatActivity {
         urlBuilder.addQueryParameter("returnDistinctValues", "true");
         urlBuilder.addQueryParameter("outSR", "4326");
         urlBuilder.addQueryParameter("f", "json");
+        */
+        HttpUrl.Builder urlBuilder = HttpUrl.parse("https://api.openweathermap.org/data/2.5/weather").newBuilder();
+
+        urlBuilder.addQueryParameter("lat", "53.230606408229466");
+        urlBuilder.addQueryParameter("lon", "-0.5407005174034509");
+        urlBuilder.addQueryParameter("appid", ""); // your api key
 
 
         // Convert the built url to a string
